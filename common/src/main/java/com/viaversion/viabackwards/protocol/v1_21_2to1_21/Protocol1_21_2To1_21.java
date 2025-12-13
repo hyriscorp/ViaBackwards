@@ -29,6 +29,7 @@ import com.viaversion.viabackwards.protocol.v1_21_2to1_21.storage.InventoryState
 import com.viaversion.viabackwards.protocol.v1_21_2to1_21.storage.ItemTagStorage;
 import com.viaversion.viabackwards.protocol.v1_21_2to1_21.storage.PlayerStorage;
 import com.viaversion.viabackwards.protocol.v1_21_2to1_21.storage.RecipeStorage;
+import com.viaversion.viabackwards.protocol.v1_21_2to1_21.storage.SignStorage;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.api.minecraft.item.data.ChatType;
@@ -95,6 +96,7 @@ public final class Protocol1_21_2To1_21 extends BackwardsProtocol<ClientboundPac
         translatableRewriter.registerBossEvent(ClientboundPackets1_21_2.BOSS_EVENT);
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_2.DISCONNECT);
         translatableRewriter.registerTabList(ClientboundPackets1_21_2.TAB_LIST);
+        translatableRewriter.registerSetPlayerTeam1_13(ClientboundPackets1_21_2.SET_PLAYER_TEAM);
         translatableRewriter.registerPlayerCombatKill1_20(ClientboundPackets1_21_2.PLAYER_COMBAT_KILL);
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_2.SYSTEM_CHAT);
         translatableRewriter.registerDisguisedChat(ClientboundPackets1_21_2.DISGUISED_CHAT);
@@ -159,6 +161,7 @@ public final class Protocol1_21_2To1_21 extends BackwardsProtocol<ClientboundPac
         user.put(new ItemTagStorage());
         user.put(new RecipeStorage(this));
         user.put(new PlayerStorage());
+        user.put(new SignStorage());
     }
 
     @Override

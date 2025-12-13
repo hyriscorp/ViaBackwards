@@ -22,7 +22,6 @@ import com.viaversion.viabackwards.protocol.v1_21_5to1_21_4.Protocol1_21_5To1_21
 import com.viaversion.viabackwards.protocol.v1_21_5to1_21_4.storage.HorseDataStorage;
 import com.viaversion.viaversion.api.data.entity.TrackedEntity;
 import com.viaversion.viaversion.api.minecraft.Holder;
-import com.viaversion.viaversion.api.minecraft.RegistryEntry;
 import com.viaversion.viaversion.api.minecraft.WolfVariant;
 import com.viaversion.viaversion.api.minecraft.entities.EntityType;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
@@ -32,11 +31,9 @@ import com.viaversion.viaversion.api.minecraft.entitydata.types.EntityDataTypes1
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPacket1_21_5;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
-import com.viaversion.viaversion.util.Key;
 import java.util.UUID;
 
 public final class EntityPacketRewriter1_21_5 extends EntityRewriter<ClientboundPacket1_21_5, Protocol1_21_5To1_21_4> {
@@ -99,17 +96,6 @@ public final class EntityPacketRewriter1_21_5 extends EntityRewriter<Clientbound
             }
         });
 
-        protocol.registerClientbound(ClientboundConfigurationPackets1_21.REGISTRY_DATA, wrapper -> {
-            final String registryKey = Key.stripMinecraftNamespace(wrapper.passthrough(Types.STRING));
-            if (RegistryDataRewriter1_21_5.NEW_REGISTRIES.contains(registryKey)) {
-                wrapper.cancel();
-                return;
-            }
-
-            final RegistryEntry[] entries = wrapper.read(Types.REGISTRY_ENTRY_ARRAY);
-            wrapper.write(Types.REGISTRY_ENTRY_ARRAY, protocol.getRegistryDataRewriter().handle(wrapper.user(), registryKey, entries));
-        });
-
         protocol.registerClientbound(ClientboundPackets1_21_5.LOGIN, wrapper -> {
             final int entityId = wrapper.passthrough(Types.INT); // Entity id
             wrapper.passthrough(Types.BOOLEAN); // Hardcore
@@ -136,7 +122,7 @@ public final class EntityPacketRewriter1_21_5 extends EntityRewriter<Clientbound
             wrapper.passthrough(Types.STRING); // Team Name
             final byte action = wrapper.passthrough(Types.BYTE); // Mode
             if (action == 0 || action == 2) {
-                wrapper.passthrough(Types.TAG); // Display Name
+                protocol.getComponentRewriter().passthroughAndProcess(wrapper); // Display name
                 wrapper.passthrough(Types.BYTE); // Flags
 
                 final int nametagVisibility = wrapper.read(Types.VAR_INT);
@@ -145,8 +131,8 @@ public final class EntityPacketRewriter1_21_5 extends EntityRewriter<Clientbound
                 wrapper.write(Types.STRING, collision(collisionRule));
 
                 wrapper.passthrough(Types.VAR_INT); // Color
-                wrapper.passthrough(Types.TAG); // Prefix
-                wrapper.passthrough(Types.TAG); // Suffix
+                protocol.getComponentRewriter().passthroughAndProcess(wrapper); // Prefix
+                protocol.getComponentRewriter().passthroughAndProcess(wrapper); // Suffix
             }
         });
     }
