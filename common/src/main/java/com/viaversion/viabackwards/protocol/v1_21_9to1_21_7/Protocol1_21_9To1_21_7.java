@@ -55,6 +55,7 @@ import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPac
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundPacket1_21_9;
+import com.viaversion.viaversion.protocols.v1_21to1_21_2.storage.BundleStateTracker;
 import com.viaversion.viaversion.rewriter.ParticleRewriter;
 import com.viaversion.viaversion.rewriter.RegistryDataRewriter;
 import com.viaversion.viaversion.rewriter.StatisticsRewriter;
@@ -98,6 +99,7 @@ public final class Protocol1_21_9To1_21_7 extends BackwardsProtocol<ClientboundP
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_9.SET_SUBTITLE_TEXT);
         translatableRewriter.registerBossEvent(ClientboundPackets1_21_9.BOSS_EVENT);
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_9.DISCONNECT);
+        translatableRewriter.registerComponentPacket(ClientboundConfigurationPackets1_21_9.DISCONNECT);
         translatableRewriter.registerTabList(ClientboundPackets1_21_9.TAB_LIST);
         translatableRewriter.registerSetPlayerTeam1_21_5(ClientboundPackets1_21_9.SET_PLAYER_TEAM);
         translatableRewriter.registerPlayerCombatKill1_20(ClientboundPackets1_21_9.PLAYER_COMBAT_KILL);
@@ -105,6 +107,8 @@ public final class Protocol1_21_9To1_21_7 extends BackwardsProtocol<ClientboundP
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_9.SYSTEM_CHAT);
         translatableRewriter.registerDisguisedChat(ClientboundPackets1_21_9.DISGUISED_CHAT);
         translatableRewriter.registerPlayerChat1_21_5(ClientboundPackets1_21_9.PLAYER_CHAT);
+        translatableRewriter.registerSetObjective(ClientboundPackets1_21_9.SET_OBJECTIVE);
+        translatableRewriter.registerSetScore1_20_3(ClientboundPackets1_21_9.SET_SCORE);
         translatableRewriter.registerPing();
 
         particleRewriter.registerLevelParticles1_21_4(ClientboundPackets1_21_9.LEVEL_PARTICLES);
@@ -199,6 +203,7 @@ public final class Protocol1_21_9To1_21_7 extends BackwardsProtocol<ClientboundP
                 wrapper.write(Types.VAR_INT, 0); // Subscription registry id (DEDICATED_SERVER_TICK_TIME)
             }
         });
+        registerClientbound(ClientboundPackets1_21_9.BUNDLE_DELIMITER, wrapper -> wrapper.user().get(BundleStateTracker.class).toggleBundling());
 
         cancelClientbound(ClientboundPackets1_21_9.DEBUG_BLOCK_VALUE);
         cancelClientbound(ClientboundPackets1_21_9.DEBUG_CHUNK_VALUE);
@@ -213,6 +218,7 @@ public final class Protocol1_21_9To1_21_7 extends BackwardsProtocol<ClientboundP
         addItemHasher(connection, new ItemHasherBase(this, connection));
         connection.put(new PlayerRotationStorage());
         connection.put(new DimensionScaleStorage());
+        connection.put(new BundleStateTracker());
     }
 
     @Override

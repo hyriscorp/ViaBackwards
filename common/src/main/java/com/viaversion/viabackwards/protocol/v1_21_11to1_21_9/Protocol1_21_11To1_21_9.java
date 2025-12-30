@@ -34,6 +34,7 @@ import com.viaversion.viabackwards.protocol.v1_21_11to1_21_9.rewriter.ComponentR
 import com.viaversion.viabackwards.protocol.v1_21_11to1_21_9.rewriter.EntityPacketRewriter1_21_11;
 import com.viaversion.viabackwards.protocol.v1_21_11to1_21_9.storage.GameTimeStorage;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.data.FullMappings;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.protocol.packet.provider.PacketTypesProvider;
 import com.viaversion.viaversion.api.protocol.packet.provider.SimplePacketTypesProvider;
@@ -67,13 +68,29 @@ public final class Protocol1_21_11To1_21_9 extends BackwardsProtocol<Clientbound
 
     public static final BackwardsMappingData MAPPINGS = new BackwardsMappingData("1.21.11", "1.21.9", Protocol1_21_9To1_21_11.class);
     private static final int END_FOG_COLOR = 10518688;
-    private static final int OVERWORLD_FOG_COLOR = 126384063;
+    private static final int OVERWORLD_FOG_COLOR = -4138753;
     private final EntityPacketRewriter1_21_11 entityRewriter = new EntityPacketRewriter1_21_11(this);
     private final BlockItemPacketRewriter1_21_11 itemRewriter = new BlockItemPacketRewriter1_21_11(this);
     private final ParticleRewriter<ClientboundPacket1_21_11> particleRewriter = new ParticleRewriter<>(this);
     private final NBTComponentRewriter<ClientboundPacket1_21_11> translatableRewriter = new ComponentRewriter1_21_11(this);
     private final TagRewriter<ClientboundPacket1_21_11> tagRewriter = new TagRewriter<>(this);
-    private final RegistryDataRewriter registryDataRewriter = new BackwardsRegistryRewriter(this);
+    private final RegistryDataRewriter registryDataRewriter = new BackwardsRegistryRewriter(this) {
+        @Override
+        protected void updateType(final CompoundTag tag, final String key, final FullMappings mappings) {
+            super.updateType(tag, key, mappings);
+
+            if (key.equals("sound") && tag.get(key) instanceof ListTag<?> listTag) {
+                // From a compact list to a single value
+                final Tag first;
+                if (listTag.isEmpty()) {
+                    first = new StringTag(mappings.mappedIdentifier(0)); // Dummy
+                } else {
+                    first = listTag.get(0);
+                }
+                tag.put(key, first);
+            }
+        }
+    };
 
     public Protocol1_21_11To1_21_9() {
         super(ClientboundPacket1_21_11.class, ClientboundPacket1_21_9.class, ServerboundPacket1_21_9.class, ServerboundPacket1_21_9.class);
@@ -142,6 +159,8 @@ public final class Protocol1_21_11To1_21_9 extends BackwardsProtocol<Clientbound
                 TagUtil.removeNamespaced(effects, "post_piercing_attack");
             }
         });
+        registryDataRewriter.remove("zombie_nautilus_variant");
+        registryDataRewriter.remove("timeline");
         registerClientbound(ClientboundConfigurationPackets1_21_9.REGISTRY_DATA, registryDataRewriter::handle);
 
         tagRewriter.removeTags("timeline");
@@ -162,12 +181,15 @@ public final class Protocol1_21_11To1_21_9 extends BackwardsProtocol<Clientbound
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_11.SET_SUBTITLE_TEXT);
         translatableRewriter.registerBossEvent(ClientboundPackets1_21_11.BOSS_EVENT);
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_11.DISCONNECT);
+        translatableRewriter.registerComponentPacket(ClientboundConfigurationPackets1_21_9.DISCONNECT);
         translatableRewriter.registerTabList(ClientboundPackets1_21_11.TAB_LIST);
         translatableRewriter.registerPlayerCombatKill1_20(ClientboundPackets1_21_11.PLAYER_COMBAT_KILL);
         translatableRewriter.registerPlayerInfoUpdate1_21_4(ClientboundPackets1_21_11.PLAYER_INFO_UPDATE);
         translatableRewriter.registerComponentPacket(ClientboundPackets1_21_11.SYSTEM_CHAT);
         translatableRewriter.registerDisguisedChat(ClientboundPackets1_21_11.DISGUISED_CHAT);
         translatableRewriter.registerPlayerChat1_21_5(ClientboundPackets1_21_11.PLAYER_CHAT);
+        translatableRewriter.registerSetObjective(ClientboundPackets1_21_11.SET_OBJECTIVE);
+        translatableRewriter.registerSetScore1_20_3(ClientboundPackets1_21_11.SET_SCORE);
         translatableRewriter.registerPing();
 
         particleRewriter.registerLevelParticles1_21_4(ClientboundPackets1_21_11.LEVEL_PARTICLES);
