@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBackwards - https://github.com/ViaVersion/ViaBackwards
- * Copyright (C) 2016-2025 ViaVersion and contributors
+ * Copyright (C) 2016-2026 ViaVersion and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ public final class BlockItemPacketRewriter1_21_2 extends BackwardsStructuredItem
 
         protocol.registerClientbound(ClientboundPackets1_21_2.LEVEL_CHUNK_WITH_LIGHT, wrapper -> {
             final Chunk chunk = blockRewriter.handleChunk1_19(wrapper, ChunkType1_20_2::new);
-            blockRewriter.handleBlockEntities(null, chunk, wrapper.user());
+            blockRewriter.handleBlockEntities(chunk, wrapper.user());
 
             if (!wrapper.user().getProtocolInfo().protocolVersion().equalTo(ProtocolVersion.v1_21)) {
                 return;
@@ -407,7 +407,9 @@ public final class BlockItemPacketRewriter1_21_2 extends BackwardsStructuredItem
     }
 
     private boolean signBlockState(final int blockStateId) {
-        return (blockStateId >= 4302 && blockStateId <= 4589) || (blockStateId >= 4762 && blockStateId <= 5625);
+        return (blockStateId >= 4302 && blockStateId <= 4589) // Normal signs
+            || (blockStateId >= 4762 && blockStateId <= 5625) // Wall & Hanging signs
+            || (blockStateId >= 19276 && blockStateId <= 19355); // Warped & Crimson signs
     }
 
     @Override

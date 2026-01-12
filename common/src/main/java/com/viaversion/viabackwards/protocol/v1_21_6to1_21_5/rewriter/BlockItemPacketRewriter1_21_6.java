@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBackwards - https://github.com/ViaVersion/ViaBackwards
- * Copyright (C) 2016-2025 ViaVersion and contributors
+ * Copyright (C) 2016-2026 ViaVersion and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPac
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
 import com.viaversion.viaversion.rewriter.BlockRewriter;
 import com.viaversion.viaversion.rewriter.RecipeDisplayRewriter;
+import com.viaversion.viaversion.rewriter.block.BlockRewriter1_21_5;
 
 import static com.viaversion.viaversion.protocols.v1_21_5to1_21_6.rewriter.BlockItemPacketRewriter1_21_6.downgradeItemData;
 import static com.viaversion.viaversion.protocols.v1_21_5to1_21_6.rewriter.BlockItemPacketRewriter1_21_6.upgradeItemData;
@@ -47,7 +48,7 @@ public final class BlockItemPacketRewriter1_21_6 extends BackwardsStructuredItem
 
     @Override
     public void registerPackets() {
-        final BlockRewriter<ClientboundPacket1_21_6> blockRewriter = BlockRewriter.for1_20_2(protocol);
+        final BlockRewriter<ClientboundPacket1_21_6> blockRewriter = new BlockRewriter1_21_5<>(protocol);
         blockRewriter.registerBlockEvent(ClientboundPackets1_21_6.BLOCK_EVENT);
         blockRewriter.registerBlockUpdate(ClientboundPackets1_21_6.BLOCK_UPDATE);
         blockRewriter.registerSectionBlocksUpdate1_20(ClientboundPackets1_21_6.SECTION_BLOCKS_UPDATE);

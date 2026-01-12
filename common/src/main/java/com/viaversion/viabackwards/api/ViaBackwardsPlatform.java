@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBackwards - https://github.com/ViaVersion/ViaBackwards
- * Copyright (C) 2016-2025 ViaVersion and contributors
+ * Copyright (C) 2016-2026 ViaVersion and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ import java.util.logging.Logger;
 
 public interface ViaBackwardsPlatform {
 
-    String MINIMUM_VV_VERSION = "5.7.0";
+    String MINIMUM_VV_VERSION = "5.7.1";
 
     default void init(final File configFile) {
         init(new ViaBackwardsConfig(configFile, getLogger()));
@@ -87,7 +87,7 @@ public interface ViaBackwardsPlatform {
     /**
      * Initialize ViaBackwards.
      */
-    default void init(final ViaBackwardsConfig config) {
+    default void init(final com.viaversion.viabackwards.api.ViaBackwardsConfig config) {
         config.reload();
         Via.getManager().getConfigurationProvider().register(config);
 

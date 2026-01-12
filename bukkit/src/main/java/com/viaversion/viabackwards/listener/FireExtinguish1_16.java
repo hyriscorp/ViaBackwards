@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBackwards - https://github.com/ViaVersion/ViaBackwards
- * Copyright (C) 2016-2025 ViaVersion and contributors
+ * Copyright (C) 2016-2026 ViaVersion and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,48 +18,36 @@
 package com.viaversion.viabackwards.listener;
 
 import com.viaversion.viabackwards.BukkitPlugin;
-import com.viaversion.viabackwards.protocol.v1_14to1_13_2.Protocol1_14To1_13_2;
+import com.viaversion.viabackwards.protocol.v1_16to1_15_2.Protocol1_16To1_15_2;
 import com.viaversion.viaversion.bukkit.listeners.ViaBukkitListener;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Lectern;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 
-public class LecternInteractListener extends ViaBukkitListener {
+public class FireExtinguish1_16 extends ViaBukkitListener {
 
-    public LecternInteractListener(BukkitPlugin plugin) {
-        super(plugin, Protocol1_14To1_13_2.class);
+    public FireExtinguish1_16(BukkitPlugin plugin) {
+        super(plugin, Protocol1_16To1_15_2.class);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onLecternInteract(PlayerInteractEvent event) {
+    public void onFireExtinguish(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+
         Block block = event.getClickedBlock();
-        if (block == null || block.getType() != Material.LECTERN) return;
+        if (block == null) return;
 
         Player player = event.getPlayer();
         if (!isOnPipe(player)) return;
 
-        Lectern lectern = (Lectern) block.getState();
-        ItemStack book = lectern.getInventory().getItem(0);
-        if (book == null) return;
-
-        BookMeta meta = (BookMeta) book.getItemMeta();
-
-        // Open a book with the text of the lectern's writable book
-        ItemStack newBook = new ItemStack(Material.WRITTEN_BOOK);
-        BookMeta newBookMeta = (BookMeta) newBook.getItemMeta();
-        //noinspection deprecation
-        newBookMeta.setPages(meta.getPages());
-        newBookMeta.setAuthor("an upsidedown person");
-        newBookMeta.setTitle("buk");
-        newBook.setItemMeta(newBookMeta);
-        player.openBook(newBook);
-
-        event.setCancelled(true);
+        Block relative = block.getRelative(event.getBlockFace());
+        if (relative.getType() == Material.FIRE) {
+            event.setCancelled(true);
+            relative.setType(Material.AIR);
+        }
     }
 }

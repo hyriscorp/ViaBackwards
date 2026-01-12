@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBackwards - https://github.com/ViaVersion/ViaBackwards
- * Copyright (C) 2016-2025 ViaVersion and contributors
+ * Copyright (C) 2016-2026 ViaVersion and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class FireDamageListener extends ViaBukkitListener {
+public class PlayerHurtSound1_12 extends ViaBukkitListener {
 
-    public FireDamageListener(BukkitPlugin plugin) {
+    public PlayerHurtSound1_12(BukkitPlugin plugin) {
         super(plugin, Protocol1_12To1_11_1.class);
     }
 

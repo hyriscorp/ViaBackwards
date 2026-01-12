@@ -1,6 +1,7 @@
+
 /*
  * This file is part of ViaBackwards - https://github.com/ViaVersion/ViaBackwards
- * Copyright (C) 2016-2025 ViaVersion and contributors
+ * Copyright (C) 2016-2026 ViaVersion and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,37 +19,30 @@
 package com.viaversion.viabackwards.listener;
 
 import com.viaversion.viabackwards.BukkitPlugin;
-import com.viaversion.viabackwards.protocol.v1_11to1_10.Protocol1_11To1_10;
+import com.viaversion.viabackwards.protocol.v1_13_1to1_13.Protocol1_13_1To1_13;
 import com.viaversion.viaversion.bukkit.listeners.ViaBukkitListener;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class BlockBreakListener extends ViaBukkitListener {
+public class ItemDropSync1_17 extends ViaBukkitListener {
 
-    public BlockBreakListener(final BukkitPlugin plugin) {
-        super(plugin, Protocol1_11To1_10.class);
+    public ItemDropSync1_17(final BukkitPlugin plugin) {
+        super(plugin, Protocol1_13_1To1_13.class); // Starts with 1.13 clients on 1.17 servers
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockBreak(final BlockBreakEvent event) {
-        if (!event.isCancelled()) {
-            return;
-        }
-
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onItemDrop(final PlayerDropItemEvent event) {
         final Player player = event.getPlayer();
-        if (player.getGameMode() == GameMode.CREATIVE || !isOnPipe(player)) {
+        if (!isOnPipe(player)) {
             return;
         }
 
-        // Resend the item in the hand to sync durability
+        // Resend the item in the hand
         final int slot = player.getInventory().getHeldItemSlot();
         final ItemStack item = player.getInventory().getItem(slot);
-        if (item != null && item.getType().getMaxDurability() > 0) {
-            player.getInventory().setItem(slot, item);
-        }
+        player.getInventory().setItem(slot, item);
     }
 }
